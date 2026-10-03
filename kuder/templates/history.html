@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="schedule-header">
+    <h1>История изменений</h1>
+</div>
+
+<form method="GET" action="{{ url_for('schedule.history') }}" class="history-filters">
+    <label>Пользователь:
+        <input type="text" name="user" value="{{ user_filter }}" placeholder="Имя">
+    </label>
+    <label>Действие:
+        <select name="action">
+            <option value="">— все —</option>
+            <option value="добавил" {% if action_filter == 'добавил' %}selected{% endif %}>добавил</option>
+            <option value="изменил" {% if action_filter == 'изменил' %}selected{% endif %}>изменил</option>
+            <option value="удалил" {% if action_filter == 'удалил' %}selected{% endif %}>удалил</option>
+            <option value="переместил" {% if action_filter == 'переместил' %}selected{% endif %}>переместил</option>
+        </select>
+    </label>
+    <button type="submit">Применить</button>
+    <a href="{{ url_for('schedule.history') }}" class="btn-reset">Сбросить</a>
+</form>
+
+<table class="history-table">
+    <thead>
+        <tr>
+            <th>Дата и время</th>
+            <th>Пользователь</th>
+            <th>Действие</th>
+            <th>Объект</th>
+            <th>Подробности</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+            <tr>
+                <td>{{ log.timestamp.strftime('%d.%m.%Y %H:%M:%S') if log.timestamp else '—' }}</td>
+                <td>{{ log.user_name or '—' }}</td>
+                <td class="action-{{ log.action }}">{{ log.action or '—' }}</td>
+                <td>{{ log.entity or '—' }}</td>
+                <td>{{ log.details or '—' }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center; color:#999;">Пока нет записей</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
